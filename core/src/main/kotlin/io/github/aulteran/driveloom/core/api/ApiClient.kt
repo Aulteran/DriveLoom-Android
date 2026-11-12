@@ -100,7 +100,7 @@ class ApiClient(
         }
         response.use { res ->
             val bytes = try {
-                res.body?.bytes() ?: ByteArray(0)
+                readLimited(res)
             } catch (e: IOException) {
                 throw ApiException(0, ApiException.NETWORK, ErrorText.of(ApiException.NETWORK, null, null, 0), cause = e)
             }
@@ -136,6 +136,20 @@ class ApiClient(
         return builder.build()
     }
 
+    /**
+     * Reads the whole body, refusing anything larger than [MAX_RESPONSE_BYTES]
+     * so a misbehaving server (or anything in the path of a plain-HTTP
+     * connection) cannot exhaust the app's memory.
+     */
+    private fun readLimited(res: Response): ByteArray {
+        val body = res.body ?: return ByteArray(0)
+        val tooLarge = { ApiException(res.code, ApiException.UNEXPECTED, "The server sent more data than this app accepts.") }
+        if (body.contentLength() > MAX_RESPONSE_BYTES) throw tooLarge()
+        val source = body.source()
+        if (source.request(MAX_RESPONSE_BYTES + 1L)) throw tooLarge()
+        return source.buffer.readByteArray()
+    }
+
     private fun captureSessionCookie(headers: Headers) {
         for (line in headers.values("Set-Cookie")) {
             if (!line.startsWith("$SESSION_COOKIE=")) continue
@@ -159,6 +173,9 @@ class ApiClient(
     companion object {
         const val SESSION_COOKIE = "dl_session"
         const val JSON_TYPE = "application/json"
+
+        /** Larger than any answer a DriveLoom server sends (photos are capped at 5 MiB, imports at 8 MiB). */
+        const val MAX_RESPONSE_BYTES = 32L * 1024 * 1024
 
         /** Cookie values are percent-encoded tokens; anything else is not sent. */
         fun isSafeCookieValue(value: String): Boolean =

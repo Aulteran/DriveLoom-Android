@@ -9,6 +9,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.PersistableBundle
 import android.provider.OpenableColumns
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -155,6 +156,17 @@ class AndroidPlatform(private val activity: ComponentActivity) : Platform {
             clip.description.extras = PersistableBundle().apply { putBoolean("android.content.extra.IS_SENSITIVE", true) }
         }
         clipboard.setPrimaryClip(clip)
+    }
+
+    private var secureHolds = 0
+
+    override fun setSecureScreen(secure: Boolean) {
+        secureHolds = (secureHolds + if (secure) 1 else -1).coerceAtLeast(0)
+        if (secureHolds > 0) {
+            activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        } else {
+            activity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
     }
 
     override fun openAuthenticator(otpauthUri: String): Boolean {
