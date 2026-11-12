@@ -41,6 +41,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,6 +74,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.aulteran.driveloom.ui.Load
 import io.github.aulteran.driveloom.ui.Loader
+import io.github.aulteran.driveloom.ui.LocalEnv
 import io.github.aulteran.driveloom.ui.theme.Loom
 import io.github.aulteran.driveloom.ui.theme.LoomIcons
 
@@ -672,10 +674,19 @@ fun ConfirmDialog(
     )
 }
 
-/** Something secret shown once: a key, a code or a link, in mono with a copy action. */
+/**
+ * Something secret shown once: a key, a code or a link, in mono with a copy
+ * action. While one is on screen the window is kept out of screenshots and
+ * the recent-apps preview.
+ */
 @Composable
 fun SecretBox(text: String, onCopy: () -> Unit, modifier: Modifier = Modifier) {
     val c = Loom.colors
+    val platform = LocalEnv.current.platform
+    DisposableEffect(platform) {
+        platform.setSecureScreen(true)
+        onDispose { platform.setSecureScreen(false) }
+    }
     Row(
         modifier = modifier.fillMaxWidth().clip(ControlShape).background(c.field).border(BorderStroke(1.dp, c.lineStrong), ControlShape).padding(start = 12.dp),
         verticalAlignment = Alignment.CenterVertically,

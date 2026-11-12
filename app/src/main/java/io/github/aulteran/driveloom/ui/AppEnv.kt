@@ -49,6 +49,12 @@ interface Platform {
 
     /** Hands an `otpauth:` link to an authenticator app. False when none is installed. */
     fun openAuthenticator(otpauthUri: String): Boolean
+
+    /**
+     * Keeps the window out of screenshots, screen recordings and the recent-apps
+     * preview while a secret is on screen. Calls nest: each `true` needs a `false`.
+     */
+    fun setSecureScreen(secure: Boolean)
 }
 
 /** Asks the person to confirm their identity when the server wants a recent sign-in. */

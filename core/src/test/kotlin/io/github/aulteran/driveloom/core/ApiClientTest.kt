@@ -207,6 +207,16 @@ class ApiClientTest {
         assertEquals("/v1/vehicles/v1/export?format=csv", server.takeRequest().path)
     }
 
+    @Test fun `an oversized answer is refused whether or not its length is declared`() = runBlocking {
+        val huge = okio.Buffer().write(ByteArray((ApiClient.MAX_RESPONSE_BYTES + 1).toInt()))
+        server.enqueue(MockResponse().setHeader("Content-Type", "application/json").setBody(huge.clone()))
+        server.enqueue(MockResponse().setHeader("Content-Type", "application/json").setChunkedBody(huge, 1024 * 1024))
+        repeat(2) {
+            val e = try { api.vehicles(false); null } catch (e: ApiException) { e }
+            assertEquals(ApiException.UNEXPECTED, e?.code)
+        }
+    }
+
     @Test fun `unsafe cookie values are never sent`() = runBlocking {
         store.sessionCookie = "abc\r\nX-Injected: 1"
         server.enqueue(json("""{"items":[]}"""))
