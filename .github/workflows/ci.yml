@@ -28,12 +28,16 @@ jobs:
 
       # The Android SDK is preinstalled on ubuntu-latest runners.
       - name: Build, lint and unit tests
-        run: ./gradlew assembleDebug lintDebug testDebugUnitTest --stacktrace
+        run: ./gradlew assembleDebug lintDebug testDebugUnitTest :core:test --stacktrace
 
       - name: Upload lint report on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: lint-report
-          path: app/build/reports/lint-results-debug.html
+          name: reports
+          path: |
+            app/build/reports/lint-results-debug.html
+            app/build/reports/lint-results-debug.txt
+            app/build/reports/tests/
+            core/build/reports/tests/
           if-no-files-found: ignore
