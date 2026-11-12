@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -31,11 +34,11 @@ import io.github.aulteran.driveloom.ui.theme.LoomIcons
 fun VehiclePhoto(vehicleId: String, imageVersion: String?, name: String, modifier: Modifier = Modifier, glyph: Dp = 56.dp) {
     val env = LocalEnv.current
     val c = Loom.colors
-    val image by produceState<ImageBitmap?>(
-        initialValue = imageVersion?.let { env.images.cached(vehicleId, it) },
-        vehicleId, imageVersion,
-    ) {
-        value = if (imageVersion == null) null else env.images.load(vehicleId, imageVersion)
+    var image by remember(vehicleId, imageVersion) {
+        mutableStateOf(imageVersion?.let { env.images.cached(vehicleId, it) })
+    }
+    LaunchedEffect(vehicleId, imageVersion) {
+        image = if (imageVersion == null) null else env.images.load(vehicleId, imageVersion)
     }
     Box(
         modifier = modifier
