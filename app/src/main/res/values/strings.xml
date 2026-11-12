@@ -1,5 +1,4 @@
 <resources>
+    <!-- DriveLoom is a working name. This is the only place the product name is defined. -->
     <string name="app_name">DriveLoom</string>
-    <string name="placeholder_title">DriveLoom</string>
-    <string name="placeholder_body">Pre-release. The Android client has not been started yet.</string>
 </resources>

@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "DriveLoom-Android"
-include(":app")
+include(":app", ":core")

@@ -5,16 +5,17 @@ plugins {
 }
 
 android {
-    // The application id is provisional while DriveLoom remains a working name.
+    // The code namespace is fixed. The application id is provisional while
+    // DriveLoom remains a working name and comes from gradle.properties.
     namespace = "io.github.aulteran.driveloom"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "io.github.aulteran.driveloom"
+        applicationId = providers.gradleProperty("driveloom.applicationId").get()
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.0.1"
+        versionCode = 2
+        versionName = "0.1.0"
     }
 
     buildTypes {
@@ -43,13 +44,15 @@ android {
 }
 
 dependencies {
+    implementation(project(":core"))
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.kotlinx.coroutines.android)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(libs.junit)

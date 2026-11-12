@@ -1,16 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- No permissions yet. INTERNET is added with the first networking milestone. -->
+    <!-- The only permission. The app talks to one host: the server the person configures. -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
+    <!--
+      usesCleartextTraffic: a self-hosted server on a home network is often
+      plain HTTP, so the platform must not block it outright. The app itself
+      refuses http:// until the person reads a warning and allows it for that
+      server (ServerUrl and the connect screen); HTTPS is the default.
+
+      allowBackup=false and the extraction rules keep the encrypted session
+      file out of cloud backups and device-to-device transfers.
+    -->
     <application
+        android:name=".DriveLoomApp"
         android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="false"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DriveLoom">
+        android:theme="@style/Theme.DriveLoom"
+        android:usesCleartextTraffic="true">
+        <!-- configChanges: Compose redraws on rotation and resize; the activity is not recreated. -->
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode|density|fontScale|layoutDirection|locale"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
