@@ -1,5 +1,5 @@
 // "Loom HUD" for Compose: the server web client's design language
-// (docs/DESIGN.md in the server repository) mapped onto Material 3.
+// (see the Notion DriveLoom pages) mapped onto Material 3.
 // Dark first, with a light theme. Colours never animate, so text contrast is
 // always its final value.
 package io.github.aulteran.driveloom.ui.theme

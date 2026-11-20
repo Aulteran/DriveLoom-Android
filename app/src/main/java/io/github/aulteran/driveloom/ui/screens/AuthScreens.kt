@@ -1,5 +1,5 @@
 // Before sign-in: connect to a server, sign in, second step, register and
-// account recovery. Passkeys and OIDC are not offered here; see docs/ASSUMPTIONS.md.
+// account recovery. Passkeys and OIDC are not offered here.
 package io.github.aulteran.driveloom.ui.screens
 
 import androidx.compose.foundation.background
